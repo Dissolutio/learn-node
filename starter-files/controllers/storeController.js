@@ -27,7 +27,11 @@ exports.editStore = async (req, res) => {
 	res.render('editStore', { title: `Edit ${store.name}`, store });
 };
 exports.updateStore = async (req, res) => {
-	//find and update the store
+	//set location data to be a 'point'
+	//in case its data older than the
+	//updated schema
+	req.body.location.type = 'Point';
+	// then find and update the store
 	const store = await Store.findOneAndUpdate({ _id: req.params.id }, req.body, {
 		new: true,
 		runValidators: true,
