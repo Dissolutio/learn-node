@@ -39,8 +39,7 @@ const storeSchema = new mongoose.Schema({
 
 storeSchema.pre('save', async function(next) {
 	if (!this.isModified('name')) {
-		next(); //skip it
-		return; //stop this function from running
+		return next();
 	}
 	this.slug = slug(this.name);
 	// find stores with slug ex, ex-1, ex-2
@@ -50,7 +49,19 @@ storeSchema.pre('save', async function(next) {
 		this.slug = `${this.slug}-${storesWithSlug.length + 1}`;
 	}
 	next();
-	// TODO make more resilient so slugs are unique
 });
+
+storeSchema.statics.getTagsList = function() {
+	return this.aggregate([
+		{ $unwind: '$tags' },
+		{
+			$group: {
+				_id: '$tags',
+				count: { $sum: 1 },
+			},
+		},
+		{ $sort: { count: -1 } },
+	]);
+};
 
 module.exports = mongoose.model('Store', storeSchema);
