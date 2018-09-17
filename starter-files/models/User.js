@@ -10,10 +10,8 @@ const userSchema = new Schema({
 	email: {
 		type: String,
 		unique: true,
-		//This is important because later, when you want to reuse the email address, you want it lowercase
 		lowercase: true,
 		trim: true,
-		// this is our middleware, it accepts a method and an error message
 		validate: [validator.isEmail, 'Invalid Email Address'],
 		required: 'Please supply an email address',
 	},
@@ -22,6 +20,11 @@ const userSchema = new Schema({
 		required: 'Please supply a name',
 		trim: true,
 	},
+});
+
+userSchema.virtual('gravatar').get(function() {
+	const hash = md5(this.email);
+	return `https://gravatar.com/avatar/${hash}?s=200`;
 });
 
 userSchema.plugin(passportLocalMongoose, { usernameField: 'email' });
