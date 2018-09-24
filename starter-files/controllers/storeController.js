@@ -41,7 +41,9 @@ exports.resize = async (req, res, next) => {
 	//once we have written the file to our filesystem, keep going!
 	next();
 };
+
 exports.createStore = async (req, res) => {
+	req.body.author = req.user._id;
 	const store = await new Store(req.body).save();
 	req.flash('success', `Successfully created ${store.name}. Care to leave a review?`);
 	res.redirect(`/stores/${store.slug}`);
@@ -53,13 +55,21 @@ exports.getStores = async (req, res) => {
 	res.render('stores', { title: 'Stores', stores });
 };
 
+const confirmOwner = (store, user) => {
+	if (!store.author.equals(user._id)) {
+		throw Error('You must own a store in order to edit it!');
+	}
+};
+
 exports.editStore = async (req, res) => {
 	// 1. Find store, given ID
 	const store = await Store.findOne({ _id: req.params.id });
 	// 2. Confirm they are owner of store
+	confirmOwner(store, req.user);
 	// 3. Render edit form for user
 	res.render('editStore', { title: `Edit ${store.name}`, store });
 };
+
 exports.updateStore = async (req, res) => {
 	//set location data to be a 'point'
 	//in case its data older than the
@@ -77,11 +87,13 @@ exports.updateStore = async (req, res) => {
 	);
 	res.redirect(`/stores/${store._id}/edit`);
 };
-exports.getStoreBySlug = async (req, res) => {
+
+exports.getStoreBySlug = async (req, res, next) => {
 	const store = await Store.findOne({ slug: req.params.slug });
 	if (!store) return next();
 	res.render('store', { store, title: store.name });
 };
+
 exports.getStoresByTag = async (req, res) => {
 	const tag = req.params.tag;
 	const tagQuery = tag || { $exists: true };
