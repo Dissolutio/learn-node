@@ -157,3 +157,8 @@ exports.heartStore = async (req, res) => {
 	const user = await User.findByIdAndUpdate(req.user._id, { [operator]: { hearts: req.params.id } }, { new: true });
 	res.json(user);
 };
+
+exports.getTopStores = async (req, res) => {
+	const stores = await Store.getTopStores();
+	res.render('topStores', { stores, title: '★ Top Stores' });
+};

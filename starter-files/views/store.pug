@@ -5,7 +5,6 @@ include mixins/_review
 
 block content
   .single
-  pre=h.dump(store)
     .single__hero
       img.single__image(src=`/uploads/${store.photo || 'store.png'}`)
       h2.title.title--single
@@ -26,6 +25,7 @@ block content
       +reviewForm(store)
     
     if store.reviews
+      h2#review-section Reviews
       .reviews
         each review in store.reviews
           .review
