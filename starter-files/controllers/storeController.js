@@ -105,6 +105,13 @@ exports.getStoresByTag = async (req, res) => {
 	res.render('tags', { tags, title: 'Tags', tag, stores });
 };
 
+exports.getStoresByUserHearts = async (req, res) => {
+	const stores = await Store.find({
+		_id: { $in: req.user.hearts },
+	});
+	res.render('stores', { stores, title: 'Hearted Stores' });
+};
+
 exports.searchStores = async (req, res) => {
 	const stores = await Store.find(
 		{
