@@ -10,22 +10,22 @@ exports.registerForm = (req, res) => {
 };
 
 exports.validateRegister = (req, res, next) => {
+	console.log(req.body, 'HELLO');
 	req.sanitizeBody('name');
 	req.checkBody('name', 'You must supply a name!').notEmpty();
 	req.checkBody('email', 'That email is not valid!').isEmail();
 	req.sanitizeBody('email').normalizeEmail({
-		remove_dots: false,
+		gmail_remove_dots: true,
 		remove_extension: false,
 		gmail_remove_subaddress: false,
 	});
 	req.checkBody('password', 'Password cannot be blank!').notEmpty();
 	req.checkBody('password-confirm', 'Confirmed password cannot be blank!').notEmpty();
 	req.checkBody('password-confirm', 'Oops! Your passwords do not match!').equals(req.body.password);
-
 	const errors = req.validationErrors();
+	console.log(req.body, 'GOODBYE');
 	if (errors) {
 		req.flash('error', errors.map(err => err.msg));
-		//must include the flashes because we are not re-rendering, normally flash would not fire until the next request
 		res.render('register', { title: 'Register', body: req.body, flashes: req.flash() });
 		return; //stop fn from running
 	}
