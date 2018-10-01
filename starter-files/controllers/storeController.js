@@ -22,7 +22,7 @@ exports.homePage = (req, res) => {
 };
 
 exports.addStore = (req, res) => {
-	res.render('editStore', { title: 'Add Store' });
+	res.render('editStore', { title: 'Add a Store' });
 };
 
 exports.upload = multer(multerOptions).single('photo');
@@ -115,14 +115,14 @@ exports.getStoresByTag = async (req, res) => {
 	const storesPromise = Store.find({ tags: tagQuery });
 	const [tags, stores] = await Promise.all([tagsPromise, storesPromise]);
 	// res.json(stores);
-	res.render('tags', { tags, title: 'Tags', tag, stores });
+	res.render('tags', { tags, title: 'Stores by Tag', tag, stores });
 };
 
 exports.getStoresByUserHearts = async (req, res) => {
 	const stores = await Store.find({
 		_id: { $in: req.user.hearts },
 	});
-	res.render('stores', { stores, title: 'Hearted Stores' });
+	res.render('stores', { stores, title: 'Favorite Stores' });
 };
 
 exports.searchStores = async (req, res) => {
@@ -161,7 +161,7 @@ exports.mapStores = async (req, res) => {
 };
 
 exports.mapPage = (req, res) => {
-	res.render('map', { title: 'Map' });
+	res.render('map', { title: 'Google Map of Stores' });
 };
 
 exports.heartStore = async (req, res) => {
